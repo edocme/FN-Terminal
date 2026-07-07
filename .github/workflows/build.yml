@@ -1,0 +1,42 @@
+name: Build FPK
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Build Go binary
+        run: |
+          cd app/server/src
+          go mod tidy
+          CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o ../terminal-server -ldflags="-s -w" main.go
+
+      - name: Create FPK package
+        run: |
+          mkdir -p fpk_build
+          cp manifest ICON.PNG ICON_256.PNG LICENSE fpk_build/
+          cp -r cmd fpk_build/
+          cp -r config fpk_build/
+          cp -r wizard fpk_build/
+          cd app
+          tar -czf ../fpk_build/app.tgz server ui www
+          cd ../fpk_build
+          tar -czf ../fn-terminal-${{ github.event.release.tag_name }}.fpk .
+
+      - name: Upload FPK to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: fn-terminal-${{ github.event.release.tag_name }}.fpk
+          token: ${{ secrets.GITHUB_TOKEN }}
