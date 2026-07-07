@@ -1,0 +1,7 @@
+{
+    "defaults": {
+        "run-as": "root"
+    },
+    "username": "fnnas.terminal",
+    "groupname": "fnnas.terminal"
+}

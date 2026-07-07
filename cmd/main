@@ -1,0 +1,144 @@
+#!/bin/bash
+
+LOG_FILE="${TRIM_PKGVAR}/info.log"
+PID_FILE="${TRIM_PKGVAR}/app.pid"
+SERVER_PID_FILE="${TRIM_PKGVAR}/server.pid"
+
+export SOCKET_PATH="${TRIM_APPDEST}/app.sock"
+export APP_NAME="fn-terminal"
+export HTTP_DIR="${TRIM_APPDEST}/www"
+export HOME="/root"
+
+CMD="${TRIM_APPDEST}/server/terminal-server"
+
+log_msg() {
+    mkdir -p "$(dirname "${LOG_FILE}")"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "${LOG_FILE}"
+}
+
+start_process() {
+    if status; then
+        return 0
+    fi
+
+    if [ ! -x "${CMD}" ]; then
+        log_msg "Server binary not found or not executable"
+        return 1
+    fi
+
+    # Remove old socket
+    rm -f "${SOCKET_PATH}"
+
+    log_msg "Starting terminal server on socket ${SOCKET_PATH}..."
+    mkdir -p "${TRIM_PKGVAR}"
+    (
+        trap 'exit 0' TERM INT
+        while true; do
+            log_msg "Launching server..."
+            ${CMD} >> "${LOG_FILE}" 2>&1 &
+            server_pid=$!
+            printf "%s" "${server_pid}" > "${SERVER_PID_FILE}"
+            wait "${server_pid}"
+            code=$?
+            rm -f "${SERVER_PID_FILE}"
+            log_msg "Server exited with code ${code}"
+            if [ "${code}" -eq 0 ]; then
+                exit 0
+            fi
+            sleep 3
+        done
+    ) >> "${LOG_FILE}" 2>&1 &
+    printf "%s" "$!" > "${PID_FILE}"
+    return 0
+}
+
+stop_process() {
+    log_msg "Stopping terminal server..."
+
+    if [ -r "${PID_FILE}" ]; then
+        pid=$(head -n 1 "${PID_FILE}" | tr -d '[:space:]')
+
+        log_msg "pid=${pid}"
+        if ! check_process "${pid}"; then
+            rm -f "${PID_FILE}"
+            return
+        fi
+
+        log_msg "send TERM signal to PID:${pid}..."
+        kill -TERM ${pid} >> ${LOG_FILE} 2>&1
+
+        local count=0
+        while check_process "${pid}" && [ $count -lt 10 ]; do
+            sleep 1
+            count=$((count + 1))
+        done
+
+        if check_process "${pid}"; then
+            kill -KILL "${pid}"
+            sleep 1
+            rm -f "${PID_FILE}"
+        fi
+    fi
+
+    if [ -r "${SERVER_PID_FILE}" ]; then
+        server_pid=$(head -n 1 "${SERVER_PID_FILE}" | tr -d '[:space:]')
+        if check_process "${server_pid}"; then
+            kill -TERM "${server_pid}" 2>/dev/null || true
+            sleep 1
+            if check_process "${server_pid}"; then
+                kill -KILL "${server_pid}" 2>/dev/null || true
+            fi
+        fi
+        rm -f "${SERVER_PID_FILE}"
+    fi
+
+    # Remove socket
+    rm -f "${SOCKET_PATH}"
+
+    return 0
+}
+
+check_process() {
+    local pid=$1
+    if kill -0 "${pid}" 2>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+status() {
+    if [ -f "${PID_FILE}" ]; then
+        pid=$(head -n 1 "${PID_FILE}" | tr -d '[:space:]')
+        if check_process "${pid}"; then
+            return 0
+        else
+            rm -f "${PID_FILE}"
+        fi
+    fi
+    return 1
+}
+
+case $1 in
+start)
+    if start_process; then
+        exit 0
+    else
+        exit 1
+    fi
+    ;;
+stop)
+    stop_process
+    exit 0
+    ;;
+status)
+    if status; then
+        exit 0
+    else
+        exit 3
+    fi
+    ;;
+*)
+    exit 1
+    ;;
+esac

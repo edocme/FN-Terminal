@@ -1,0 +1,16 @@
+#!/bin/bash
+
+export PATH=/var/apps/nodejs_v22/target/bin:$PATH
+
+case $1 in
+start)
+    # Reinstall npm dependencies during upgrade
+    if command -v npm >/dev/null 2>&1; then
+        cd "${TRIM_APPDEST}/server" && npm install --production 2>&1 >> "${TRIM_TEMP_LOGFILE}"
+    fi
+    exit 0
+    ;;
+*)
+    exit 0
+    ;;
+esac

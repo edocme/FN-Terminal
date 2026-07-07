@@ -1,0 +1,16 @@
+# Binaries
+app/server/terminal-server
+*.fpk
+
+# Build artifacts
+fpk_build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

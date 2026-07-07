@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FN-Terminal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.min.css">
+</head>
+<body>
+    <div id="terminal"></div>
+    <div id="mobile-controls">
+        <button id="fontDown" class="ctrl-btn popup-btn hidden">A-</button>
+        <button id="fontReset" class="ctrl-btn popup-btn hidden">A</button>
+        <button id="fontUp" class="ctrl-btn popup-btn hidden">A+</button>
+        <button id="fontBtn" class="ctrl-btn hidden">Aa</button>
+        <button id="expandBtn" class="ctrl-btn expand-btn">‹</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-web-links@0.11.0/lib/addon-web-links.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

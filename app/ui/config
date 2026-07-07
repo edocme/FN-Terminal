@@ -1,0 +1,14 @@
+{
+    ".url": {
+        "fn-terminal.Application": {
+            "title": "Terminal",
+            "icon": "images/icon_{0}.png",
+            "type": "iframe",
+            "protocol": "",
+            "gatewaySocket": "app.sock",
+            "gatewayPrefix": "/app/fn-terminal",
+            "url": "/app/fn-terminal",
+            "allUsers": true
+        }
+    }
+}

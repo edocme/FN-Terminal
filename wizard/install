@@ -1,0 +1,30 @@
+[
+    {
+        "stepTitle": "欢迎安装",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "欢迎使用飞牛NAS本地终端管理器！本应用提供Web终端访问功能，方便您远程管理NAS系统。"
+            },
+            {
+                "type": "tips",
+                "helpText": "<strong>注意事项：</strong><br>1. 本应用需要root权限运行<br>2. 请确保NAS已开启SSH服务<br>3. 建议在内网环境下使用"
+            }
+        ]
+    },
+    {
+        "stepTitle": "配置确认",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "终端服务将运行在端口 <strong>7681</strong>，请确保该端口未被占用。"
+            },
+            {
+                "type": "switch",
+                "field": "wizard_enable_auth",
+                "label": "启用终端认证",
+                "initValue": "false"
+            }
+        ]
+    }
+]
