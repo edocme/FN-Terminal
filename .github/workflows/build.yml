@@ -33,10 +33,12 @@ jobs:
           cd app
           tar -czf ../fpk_build/app.tgz server ui www
           cd ../fpk_build
-          tar -czf ../fn-terminal-${{ github.event.release.tag_name }}.fpk .
+          FPK_NAME="fn-terminal-${{ github.event.release.tag_name }}.fpk"
+          tar -czf "../${FPK_NAME}" .
+          echo "FPK_FILE=${FPK_NAME}" >> $GITHUB_ENV
 
       - name: Upload FPK to release
         uses: softprops/action-gh-release@v2
         with:
-          files: fn-terminal-${{ github.event.release.tag_name }}.fpk
+          files: ${{ env.FPK_FILE }}
           token: ${{ secrets.GITHUB_TOKEN }}
