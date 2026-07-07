@@ -10,7 +10,7 @@
 
 ### 移动端
 
-![移动端](docs/image/android.jpg)
+<img src="docs/image/android.jpg" width="380" height="836" alt="移动端">
 
 ## 功能特性
 
